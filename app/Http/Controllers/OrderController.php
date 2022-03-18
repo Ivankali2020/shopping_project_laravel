@@ -27,7 +27,8 @@ class OrderController extends Controller
            });
 
        if(Auth::user()->role == 1){
-           $orders = $orders->paginate(5);
+           $orders = $orders->paginate(2);
+//           return $orders;
            return view('Backend.Order.index',compact('orders'));
        }else{
            $orders = $orders->where('user_id',Auth::id())->where('status','<','4')->get();
@@ -54,14 +55,14 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         //ဖုန်းနံပါတ် နဲ့ နေရာကို အရင်တောင်းတာပါ
-        if(isset($request->phone)){
+        if(Auth::user()->phone == null){
             $validate = Validator::make($request->all(),[
                 'phone' => 'required|min:9',
                 'address' => 'required|min:10',
             ]);
 
             if($validate->fails()){
-                return ;
+                return redirect()->back()->with('message',['icon'=>'success','text'=>'Don not kid! ']);
             }
             $user = User::findOrFail(Auth::id());
             $user->phone = $request->phone;

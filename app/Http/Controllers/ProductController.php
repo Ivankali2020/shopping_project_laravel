@@ -30,7 +30,7 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function create()
     {
@@ -62,6 +62,7 @@ class ProductController extends Controller
         $product->discount = $request->discount ?? null;
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
+        $product->product_code = strtoupper($request->product_code);
         $product->save();
         return redirect()->back()->with('message',['icon'=>'success','text'=>'<h2 class="icon-gradient bg-mean-fruit">Successfully Inserted!</h2>']);
     }
@@ -95,13 +96,14 @@ class ProductController extends Controller
      *
      * @param  \App\Http\Requests\UpdateProductRequest  $request
      * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
         $data = $request->validated();
 
         if(isset($request->photo)){
+
             $file = $request->file('photo');
             $newName = uniqid().$file->getClientOriginalName();
             if($product->photo != 'photo.png'){
@@ -112,6 +114,9 @@ class ProductController extends Controller
             DB::table('products')
                 ->where('id','=',$product->id)
                 ->update(array_merge($data,['photo'=>$newName , 'slug' => Str::slug($request->name) , 'discount' => $request->discount ?? null]));
+
+            return redirect()->back()
+                ->with('message',['icon'=>'success','text'=>'<h2 class="icon-gradient bg-mean-fruit">Photo Updated  </h2>']);
         }else{
             DB::table('products')
                 ->where('id','=',$product->id)
@@ -148,5 +153,11 @@ class ProductController extends Controller
         }
         $user->heart()->attach($request->product_id);
         return response()->json(['success'=>'true','id'=>$request->product_id ]);
+    }
+
+    public function barcode()
+    {
+        $products = Product::all();
+        return view('Backend.BarCode.index',compact('products'));
     }
 }

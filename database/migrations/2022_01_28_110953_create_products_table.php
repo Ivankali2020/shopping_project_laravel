@@ -25,6 +25,7 @@ class CreateProductsTable extends Migration
             $table->string('photo')->default('photo.png');
             $table->bigInteger('category_id');
             $table->bigInteger('brand_id');
+            $table->string('product_code')->unique();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });
