@@ -27,7 +27,8 @@ class OrderController extends Controller
            });
 
        if(Auth::user()->role == 1){
-           $orders = $orders->paginate(5);
+           $orders = $orders->paginate(2);
+//           return $orders;
            return view('Backend.Order.index',compact('orders'));
        }else{
            $orders = $orders->where('user_id',Auth::id())->where('status','<','4')->get();

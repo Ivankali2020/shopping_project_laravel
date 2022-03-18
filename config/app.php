@@ -165,7 +165,7 @@ return [
         /*
          * Package Service Providers...
          */
-
+        MyanmarPhone\MyanmarPhoneServiceProvider::class,
         /*
          * Application Service Providers...
          */
