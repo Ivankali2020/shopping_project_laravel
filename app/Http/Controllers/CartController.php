@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCartRequest;
 use App\Http\Requests\UpdateCartRequest;
 use App\Models\Cart;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -41,9 +42,13 @@ class CartController extends Controller
             ->whereExists(function ($q){
             return $q->where('product_id',request()->product_id);
         })->get();
+
+        //this is if already added will return
         if(count($carts) > 0){
             return response()->json(['icon'=>'question','text'=>'Your Already Added']);
         }
+
+        // this is cart store
         $cart = new Cart();
         $cart->product_id = $request->product_id;
         $cart->user_id = Auth::id();
@@ -90,12 +95,17 @@ class CartController extends Controller
         $products = $carts->mapToGroups(function ($p,$price){
             $qulityMultipleByProduct = $p['product']['price'] * $p['quality'] ;
             $dividedByOnehundred = ($qulityMultipleByProduct * $p['product']['discount'] )/ 100;
-            return ['price' =>  $qulityMultipleByProduct - $dividedByOnehundred ];
+            return [ 'total' =>  $qulityMultipleByProduct - $dividedByOnehundred ];
         });
-        $a = $products->toArray()['price'];
-        $total = array_sum($a);
+        $subtotal = $carts->mapToGroups(function ($p, $price) {
+            $qulityMultipleByProduct = $p['product']['price'] * $p['quality'] ;
+            return [ 'subtotal' =>  $qulityMultipleByProduct  ];
+        });
 
-        return json_encode(['total'=>"$total"]);
+        $total = array_sum($products['total']->toArray());
+        $subTotal = array_sum($subtotal['subtotal']->toArray());
+
+        return json_encode(['total'=>"$total" , 'subTotal' => "$subTotal"]);
     }
 
     /**

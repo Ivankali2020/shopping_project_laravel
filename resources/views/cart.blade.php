@@ -42,17 +42,17 @@
                                    </td>
                                    <td >
                                        <div class="d-flex justify-content-center ">
-                                           <button id="minus" onclick="minus('{{$c->id}}')" class="btn btn-outline-light"><i class="fa fa-minus"></i></button>
-                                           <input id="quality{{ $c->id }}"  class="form-control text-center mx-2 " style="width: 50px;" type="text" value="{{ $c->quality }}" min="1" >
-                                           <button id="plus" onclick="plus('{{$c->id}}')"  class="btn btn-outline-light"><i class="fa fa-plus"></i></button>
+                                           <button id="minus" onclick="minus('{{$c->id}}' , '{{ $c->product_id }}')" class="btn btn-outline-light"><i class="fa fa-minus"></i></button>
+                                           <input id="quality{{ $c->id }}" readonly  class="form-control text-center mx-2 " style="width: 50px;" type="text" value="{{ $c->quality }}" min="1" >
+                                           <button id="plus" onclick="plus('{{$c->id}}' , '{{ $c->product_id }}')"  class="btn btn-outline-light"><i class="fa fa-plus"></i></button>
                                        </div>
                                    </td>
                                   <td>
                                       <div class="">
-                                          <button class="btn btn-light p-1 px-2 icon-gradient bg-mixed-hopes" >  <i class="fa fa-heart"></i> </button>
-                                          <form action="{{ route('cart.destroy',$c->id) }}" method="post" class="d-inline ">
+                                          <button id="heart{{ $c->product->id }}" onclick="heart('{{ $c->product->id }}')" class="btn btn-light p-1 px-2 icon-gradient {{ $c->product->hearts ? 'bg-mean-fruit' : '' }}" >  <i class="fa fa-heart"></i> </button>
+                                          <form id="cartDelete{{ $c->id }}" action="{{ route('cart.destroy',$c->id) }}" method="post" class="d-inline ">
                                               @csrf @method('delete')
-                                              <button class="btn btn-outline-danger p-1 px-2 " > Remove <i class="ml-2 fa fa-trash "></i> </button>
+                                              <button type="button" onclick="confirmDelete('{{ $c->id }}')" class="btn btn-outline-danger p-1 px-2 " > Remove <i class="ml-2 fa fa-trash "></i> </button>
                                           </form>
                                       </div>
                                   </td>
@@ -78,7 +78,7 @@
                         <h3 class="fw-bolder mb-4 ">  Your Order </h3>
                         <div class="d-flex justify-content-between align-items-center fw-bold  ">
                             <div class="">Total</div>
-                            <div class="total"><i class="fa fa-dollar-sign mx-2 "></i> {{ $total ?? '00' }}.00</div>
+                            <div class="Subtotal"><i class="fa fa-dollar-sign mx-2 "></i> {{ number_format($subTotal ?? '00',2)  }}</div>
                         </div>
                         @forelse($carts as $c)
                            @if($c->product->discount != null)
@@ -95,13 +95,13 @@
                         <hr>
                         <div class="d-flex my-3  h3  justify-content-between align-items-center fw-bold  ">
                             <div class="">Total </div>
-                            <div class="total"> <i class="fa fa-dollar-sign "></i> {{ $total ?? '00' }}.00</div>
+                            <div class="total"> <i class="fa fa-dollar-sign "></i> {{ number_format($total ?? '00',2)  }}</div>
                         </div>
 
                         @if(isset($total) && isset(\Illuminate\Support\Facades\Auth::user()->phone))
-                            <form action="{{ route('order.store') }}" method="post">
+                            <form id="orderStore" action="{{ route('order.store') }}" method="post">
                                 @csrf
-                                <button class="btn btn-block btn-light text-secondary icon-gradient bg-happy-fisher">
+                                <button type="button" onclick="cofirmPayment()" class="btn btn-block btn-light text-secondary icon-gradient bg-happy-fisher">
                                     Payment
                                 </button>
                             </form>
@@ -128,7 +128,7 @@
                 </div>
                 <div class="modal-body ">
 
-                    <form action="{{ route('order.store') }}" method="post">
+                    <form id="orderStore" action="{{ route('order.store') }}" method="post">
                         @csrf
                         <div class="form-group d-flex justify-content-between align-items-center">
                             <div class="mr-4 "><i class="pe-7s-phone fs-1 "></i></div>
@@ -158,35 +158,90 @@
 
     <script>
 
-        function plus(cart_id){
+        function plus(cart_id, product_id){
             let count = 1;
             let v = Number(document.getElementById('quality'+cart_id).value);
             $('#quality'+cart_id).val(count + v);
-            ajaxPlusAndMinus($('#quality'+cart_id).val(),cart_id);
+            ajaxPlusAndMinus($('#quality'+cart_id).val(),cart_id,product_id,'true');
         }
 
-        function minus(cart_id){
+        function minus(cart_id, product_id){
             let count = 1;
             let v = Number(document.getElementById('quality'+cart_id).value);
             if(v > 1){
                 $('#quality'+cart_id).val( v - count);
-                ajaxPlusAndMinus($('#quality'+cart_id).val(),cart_id);
+                ajaxPlusAndMinus($('#quality'+cart_id).val(),cart_id,product_id,'false');
             }
         }
 
-        function ajaxPlusAndMinus(quality,cart_id)
+        function ajaxPlusAndMinus(quality,cart_id,product_id,is_plus)
         {
             $.ajax({
                 url:"/cart/"+cart_id,
                 dataType: "json",
                 type: "PUT",
-                data: { cart_id : cart_id , '_token' : "{{ csrf_token() }}", quality : quality },
+                data: { cart_id : cart_id , product_id : product_id , is_plus : is_plus, '_token' : "{{ csrf_token() }}", quality : quality },
                 success: function (data) {
-                    console.log(data.total);
+                    console.log(data);
                     $('.total').toArray().map(n => n.innerHTML = `<i class="fa fa-dollar-sign mr-2 "></i>`+ data.total+'.00')
+                    $('.Subtotal').toArray().map(n => n.innerHTML = `<i class="fa fa-dollar-sign mr-2 "></i>`+ data.subTotal+'.00')
                 }
             })
         }
+
+        function cofirmPayment()
+        {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Your Order Will Be Get",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Confirm'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                   $('#orderStore').submit();
+                }
+            })
+        }
+        function confirmDelete(id)
+        {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Your Order Will Be Get",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Confirm'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#cartDelete'+id).submit();
+                }
+            })
+        }
+        function heart(id){
+            $.ajax({
+                url : "{{ route('product.heart') }}",
+                type : 'post',
+                dataType : 'json',
+                data : { product_id : id , '_token' : "{{ csrf_token() }}" },
+                success: function (data){
+                    console.log(data);
+                    if(data.success == 'true'){
+                        $('#heart'+data.id).addClass('bg-mean-fruit');
+                        let count = $('#heartCount'+data.id).html();
+                        console.log( $('#heartCount'+data.id).html(++count) );
+                    }else{
+                        $('#heart'+data.id).removeClass('bg-mean-fruit');
+                        let count = $('#heartCount'+data.id).html();
+                        console.log( $('#heartCount'+data.id).html(--count) );
+                    }
+                }
+            })
+        }
+
     </script>
 
 @endsection

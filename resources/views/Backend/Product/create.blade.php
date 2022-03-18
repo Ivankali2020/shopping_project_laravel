@@ -69,6 +69,10 @@
                                 <label class="h6 fw-bolder icon-gradient bg-mean-fruit mb-3  " for="">Discount (%)</label>
                                 <input type="number" name="discount" value="{{ old('discount') }}" class="form-control">
                             </div>
+                            <div class="col-12 col-md-6 mb-3 ">
+                                <label class="h6 fw-bolder icon-gradient bg-mean-fruit mb-3  " for="">Code No</label>
+                                <input type="text" name="product_code" value="{{ old('product_code') }}" class="form-control">
+                            </div>
                             <div class="col-12  mb-3 ">
                                 <label class="h6 fw-bolder icon-gradient bg-mean-fruit  " for="">Detail</label>
                                 <textarea name="detail" id="" cols="30" rows="5 " class="form-control ">

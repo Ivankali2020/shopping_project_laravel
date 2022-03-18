@@ -28,11 +28,13 @@ Route::group(['middleware' => ['auth']],function (){
     Route::resource('brand',\App\Http\Controllers\BrandController::class);
     Route::resource('user',\App\Http\Controllers\UserController::class);
     Route::resource('product',\App\Http\Controllers\ProductController::class);
+    Route::get('barcode',[\App\Http\Controllers\ProductController::class,'barcode'])->name('product.barcode');
     Route::resource('cart',\App\Http\Controllers\CartController::class);
     Route::resource('order',\App\Http\Controllers\OrderController::class);
     Route::post('/user/upgradeAdmin', [\App\Http\Controllers\UserController::class, 'upgradeAdmin'])->name('user.upgradeAdmin');
 
 });
+
 
 Route::get('/redirect/{name}',[\App\Http\Controllers\Auth\LoginController::class,'redirect'])->name('redirect.name');
 Route::get('/callback/{name}',[\App\Http\Controllers\Auth\LoginController::class,'callBack'])->name('callback.name');

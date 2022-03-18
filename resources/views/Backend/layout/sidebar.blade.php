@@ -38,6 +38,7 @@
 
                 <li class="app-sidebar__heading">Order Manager</li>
                 <x-side-bar route="{{ route('order.index') }}" sidebarname=" Order List" icon="pe-7s-box2"  active="order_index_active"/>
+                <x-side-bar route="{{ route('product.barcode') }}" sidebarname="Barcodes" icon="pe-7s-box2"  active="barcode_index_active"/>
 
 
 

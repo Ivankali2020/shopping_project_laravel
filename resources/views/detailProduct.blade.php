@@ -61,11 +61,11 @@
                         <form action="{{ route('detail.product') }}" method="get" class="form-group row my-4  ">
                             <div class="col-6">
                                <label for="">MIN</label>
-                               <input value="{{ old('min',request()->min) }}" type="text" name="min" class="form-control mr-4 ">
+                               <input value="{{ old('min',request()->min) }}" type="number" name="min" class="form-control mr-4 ">
                             </div>
                             <div class="col-6 text-right ">
                                 <label for="">Max</label>
-                                <input value="{{ old('max',request()->max) }}" type="text" name="max" class="form-control mr-4 ">
+                                <input value="{{ old('max',request()->max) }}" type="number" name="max" class="form-control mr-4 ">
                             </div>
                             <div class="col-12 text-center mt-4 ">
                                 <button class="btn btn-light w-25 "> Apply </button>
@@ -108,13 +108,16 @@
                                 <div class=" d-flex justify-content-between align-items-center mt-4 ">
                                     <div class="">
                                         @if($p->discount != null)
-                                            <span class=" fw-bold text-decoration-line-through  ">${{ $p->price }}</span>
-                                            <span class="h6 fw-bold  icon-gradient bg-happy-fisher  ">
+                                            <span class=" fw-bold text-decoration-line-through  ">
+                                                <span class="h5">$ </span>
+                                                {{ $p->price }}
+                                            </span>
+                                            <span class="h6 fw-bold mr-2   icon-gradient bg-happy-fisher  ">
                                                 <span class="h5">$ </span>
                                                 {{ number_format( $p->price - ($p->price * $p->discount) / 100  , 2)  }}
                                             </span>
                                         @else
-                                            <span class="h6 fw-bold   icon-gradient bg-happy-fisher ">{{ $p->price }}</span>
+                                            <span class="h6 fw-bold   icon-gradient bg-happy-fisher ">$ {{ $p->price }}</span>
                                         @endif
                                     </div>
 

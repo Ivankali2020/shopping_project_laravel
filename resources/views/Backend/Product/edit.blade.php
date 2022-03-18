@@ -17,7 +17,7 @@
 
     <div class="container mt-3 ">
         <div class="row">
-            <div class="col-md-8 m-auto ">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4 icon-gradient bg-mean-fruit ">
@@ -57,9 +57,9 @@
                                     @endforelse
                                 </select>
                             </div>
-                            <div class="col-12 col-md-6 mb-3 ">
+                            <div class="col-12 col-md-6 mb-3 d-none">
                                 <label class="h6 fw-bolder icon-gradient bg-mean-fruit mb-3  " for="">Photo</label>
-                                <input type="file"  accept="image/jpeg,image/jpg,image/png" value="{{ old('photo',$product->photo) }}" name="photo" class="form-control p-1">
+                                <input type="file" id="oldPhoto" onchange="this.form.submit()"  accept="image/jpeg,image/jpg,image/png" value="{{ old('photo',$product->photo) }}" name="photo" class="form-control p-1">
                             </div>
                             <div class="col-12 col-md-6 mb-3 ">
                                 <label class="h6 fw-bolder icon-gradient bg-mean-fruit mb-3  " for="">Available Stock</label>
@@ -68,6 +68,10 @@
                             <div class="col-12 col-md-6 mb-3 ">
                                 <label class="h6 fw-bolder icon-gradient bg-mean-fruit mb-3  " for="">Discount (%)</label>
                                 <input type="number" name="discount" value="{{ old('discount',$product->discount) }}" class="form-control">
+                            </div>
+                            <div class="col-12 col-md-6 mb-3 ">
+                                <label class="h6 fw-bolder icon-gradient bg-mean-fruit mb-3  " for="">Code No</label>
+                                <input type="text" name="product_code" value="{{ old('product_code',$product->product_code) }}" class="form-control">
                             </div>
                             <div class="col-12  mb-3 ">
                                 <label class="h6 fw-bolder icon-gradient bg-mean-fruit  " for="">Detail</label>
@@ -83,7 +87,13 @@
                     </div>
                 </div>
             </div>
-
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <img onclick="$('#oldPhoto').click()" src="{{ asset('storage/productPhoto/'.$product->photo) }}" width="100%" alt="">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -91,5 +101,6 @@
 @section('script')
 
     {!! JsValidator::formRequest('App\Http\Requests\UpdateProductRequest', '#productEdit'); !!}
+
 
 @endsection
