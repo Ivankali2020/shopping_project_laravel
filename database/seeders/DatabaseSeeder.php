@@ -58,6 +58,7 @@ class DatabaseSeeder extends Seeder
 
                 'category_id' => Category::all()->random()->id,
                 'brand_id' => Brand::all()->random()->id,
+                'product_code' => uniqid()
 
             ]);
         }

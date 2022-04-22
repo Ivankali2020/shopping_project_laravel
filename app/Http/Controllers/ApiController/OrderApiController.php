@@ -27,7 +27,7 @@ class OrderApiController extends Controller
      */
     public function index()
     {
-        $orders = Order::where('user_id',Auth::id())->where('status','<','4')->paginate(2);
+        $orders = Order::where('user_id',Auth::id())->where('status','<','4')->get();
 //        return $orders;
         return response()->json(OrderResource::collection($orders));
     }
@@ -142,7 +142,7 @@ class OrderApiController extends Controller
         }
 
         //gate define ထားတယ်နော် ပြင်အူး AuthServiceProvider ထဲမှာ
-        if(Gate::allows('delete',$order)){
+        if(Gate::allows('orderGate',$order)){
             $order->delete();
             return response()->json(['data'=>'successfully order cancel !']);
         }

@@ -20,7 +20,7 @@ class CartApiController extends Controller
     public function index()
     {
         $carts = Cart::where('user_id',Auth::id())->get();
-//        return $carts;
+        // return $carts;
         return response()->json(CartResource::collection($carts));
     }
 
@@ -33,7 +33,12 @@ class CartApiController extends Controller
     public function store(Request $request)
     {
 
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+
         $carts = Cart::where('user_id',Auth::id())->where('product_id',$request->product_id)->exists();
+
         if($carts){
             //this is if already added will return
             return response()->json(['icon'=>'question','text'=>'Your Already Added']);
@@ -76,9 +81,10 @@ class CartApiController extends Controller
         $validate = $request->validate([
             'quality' => 'required|min:1|max:50',
             '_method' => 'required',
+            'parent_id' => 'required|exists:products,id'
         ]);
-        $cart = Cart::find($id);
 
+        $cart = Cart::find($id);
         if($cart == null){
             return response()->json(['message'=>'something was wrong :)!']);
         }
