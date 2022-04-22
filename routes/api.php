@@ -31,4 +31,5 @@ Route::apiResource('carts', CartApiController::class)->middleware(['auth:sanctum
 Route::apiResource('orders', OrderApiController::class)->middleware(['auth:sanctum']);
 
 Route::post('login',[AuthController::class,'login']);
-Route::post('logout',[AuthController::class,'logout']);
+Route::post('register',[AuthController::class,'register']);
+Route::post('logout',[AuthController::class,'logout'])->middleware(['auth:sanctum']);
